@@ -27,14 +27,15 @@ public class BoardController {
         model.addAttribute("boards", boards);
         return "board/boardList";
     }
-    @RequestMapping("board/boardNew")
-    public String boardNew(){
+    @GetMapping ("/board/boardNew")
+    public String boardNew(Model model){
+        model.addAttribute("BoardForm", new BoardForm());
+
         return "board/boardNew";
     }
 
-    @PostMapping("board/boardNew")
-    public String boardNew(@Valid BoardForm form, BindingResult result) {
-        System.out.println("form = " + form);
+    @PostMapping("/board/boardNew")
+    public String create(@Valid BoardForm form, BindingResult result) {
         if (result.hasErrors()) {
             return "board/boardNew";
         }
@@ -44,12 +45,11 @@ public class BoardController {
         board.setContent(form.getContent());
         board.setWriter(form.getWriter());
         board.setWrite_dt(LocalDateTime.now());
-
-        boardService.join(board);
+        boardService.saveBoard(board);
         return "redirect:/";
     }
     @GetMapping("board/{seq}/edit")
-    public String updateBoard(@PathVariable("seq") Long seq, Model model) {
+    public String updateBoardForm(@PathVariable("seq") Long seq, Model model) {
         Board board = (Board) boardService.findOne(seq);
 
         BoardForm form = new BoardForm();
@@ -60,5 +60,11 @@ public class BoardController {
 
         model.addAttribute("form", form);
         return "board/boardUpdate";
+    }
+    @PostMapping("board/{seq}/edit")
+    public String updateBoard(@PathVariable("seq") Long seq, @ModelAttribute("form") BoardForm form) {
+        //System.out.println("form.getContent() = " + form.getContent());
+        boardService.updateBoard(seq, form.getContent(),form.getTitle(),form.getWriter());
+        return "redirect:/";
     }
 }

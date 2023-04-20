@@ -13,8 +13,22 @@ import java.util.List;
 public class BoardRepository2 {
     private final EntityManager em;
 
-    public List<Board> findBoards(BoardSearch boardSearch) {
-        return em.createQuery("select b from Board b", Board.class)
+    public List<Board> findBoards(String searchText) {
+        return em.createQuery("select b from Board b where b.title=:searchText", Board.class)
+                .setParameter("searchText",searchText)
                 .getResultList();
+    }
+
+
+    public void save(Board board) {
+        if (board.getSeq() == null) {
+            em.persist(board);
+        } else {
+            em.merge(board);
+        }
+    }
+
+    public Board findById(Long seq){
+        return em.find(Board.class,seq);
     }
 }

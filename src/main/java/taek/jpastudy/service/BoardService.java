@@ -11,22 +11,30 @@ import taek.jpastudy.repository.BoardRepository2;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BoardService {
 
-    private final BoardRepository boardRepository;
+    private final BoardRepository2 boardRepository;
 
     public List<Board> findBoards(BoardSearch boardSearch){
-        return boardRepository.findAll();
+        System.out.println(boardSearch.getSearchText());
+        return boardRepository.findBoards(boardSearch.getSearchText());
+    }
+    public Board findOne(Long seq) {
+        return boardRepository.findById(seq);
     }
     @Transactional
-    public Long join(Board board) {
+    public Long saveBoard(Board board) {
 
         boardRepository.save(board);
         return board.getSeq();
     }
-
-    public Board findOne(Long seq) {
-        return boardRepository.findById(seq).get();
+    @Transactional
+    public void updateBoard(Long seq, String content, String title, String writer) {
+        Board board = boardRepository.findById(seq);
+        board.setContent(content);
+        board.setTitle(title);
+        board.setWriter(writer);
     }
 }
