@@ -9,20 +9,23 @@
   <form role="form" action="/board/boardNew" th:object="${boardForm}"  method="post">
 
     <div class="form-group">
-      <label for="writer">작성자</label>
-      <input type="text" name="writer" class="form-control" id="writer"
-             placeholder="작성자를 입력하세요" />
+      <label th:for="writer">작성자</label>
+      <input type="text" th:field="*{writer}" class="form-control" placeholder="작성자를 입력하세요"
+             th:class="${#fields.hasErrors('writer')}? 'form-control fieldError' : 'form-control'">
+      <p th:if="${#fields.hasErrors('writer')}" th:errors="*{writer}">Incorrect date</p>
     </div>
     <div class="form-group">
-      <label for="title">제목</label>
-      <input type="text" name="title" class="form-control" id="title" placeholder="제목을 입력하세요"/>
+      <label th:for="title">제목</label>
+      <input type="text" th:field="*{title}"  class="form-control" placeholder="제목을 입력하세요"
+             th:class="${#fields.hasErrors('title')}? 'form-control fieldError' : 'form-control'">
+      <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Incorrect date</p>
     </div>
     <div class="form-group">
-      <label for="content">내용</label>
-      <input type="text" name="content" th:style="${'height:300px'}" class="form-control" id="content"/>
+      <label th:for="content">내용</label>
+      <textarea th:field="*{content}" th:style="${'height:300px'}" class="form-control" ></textarea>
     </div>
 
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary">저장</button>
   </form>
   <br/>
   <div th:replace="fragments/footer :: footer" />

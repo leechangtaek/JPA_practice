@@ -18,8 +18,7 @@ public class BoardService {
     private final BoardRepository2 boardRepository;
 
     public List<Board> findBoards(BoardSearch boardSearch){
-        System.out.println(boardSearch.getSearchText());
-        return boardRepository.findBoards(boardSearch.getSearchText());
+        return boardRepository.findBoards(boardSearch);
     }
     public Board findOne(Long seq) {
         return boardRepository.findById(seq);
@@ -36,5 +35,11 @@ public class BoardService {
         board.setContent(content);
         board.setTitle(title);
         board.setWriter(writer);
+    }
+
+    @Transactional
+    public void deleteBoard(Long seq) {
+        Board board = boardRepository.findById(seq);
+        boardRepository.deleteBorad(board);
     }
 }

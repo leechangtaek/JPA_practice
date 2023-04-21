@@ -29,17 +29,17 @@ public class BoardController {
     }
     @GetMapping ("/board/boardNew")
     public String boardNew(Model model){
-        model.addAttribute("BoardForm", new BoardForm());
+        model.addAttribute("boardForm", new BoardForm());
 
         return "board/boardNew";
     }
 
     @PostMapping("/board/boardNew")
-    public String create(@Valid BoardForm form, BindingResult result) {
+    public String createBoard(@Valid BoardForm form, BindingResult result) {
         if (result.hasErrors()) {
+
             return "board/boardNew";
         }
-
         Board board = new Board();
         board.setTitle(form.getTitle());
         board.setContent(form.getContent());
@@ -65,6 +65,11 @@ public class BoardController {
     public String updateBoard(@PathVariable("seq") Long seq, @ModelAttribute("form") BoardForm form) {
         //System.out.println("form.getContent() = " + form.getContent());
         boardService.updateBoard(seq, form.getContent(),form.getTitle(),form.getWriter());
+        return "redirect:/";
+    }
+    @PostMapping("board/{seq}/delete")
+    public String deleteBoard(@PathVariable("seq") Long seq) {
+        boardService.deleteBoard(seq);
         return "redirect:/";
     }
 }
