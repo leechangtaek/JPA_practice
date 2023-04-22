@@ -17,5 +17,6 @@ public class BoardForm {
     private String writer;
 
     private String content;
+    private Long p_seq;
 }
 

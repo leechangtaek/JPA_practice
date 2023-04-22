@@ -22,6 +22,8 @@
     </div>
 
     <button type="submit" class="btn btn-primary">저장</button>
+    <button type="button" class="btn btn-info" th:onclick="fn_reBoard()">답글</button>
+    <button type="button" class="btn btn-light" th:onclick="fn_boardListForm()">목록</button>
   </form>
   <br/>
   <div th:replace="fragments/footer :: footer" />
@@ -29,4 +31,16 @@
 </div> <!-- /container -->
 
 </body>
+<script th:inline="javascript">
+
+  function fn_reBoard() {
+    var p_seq = [[${form.getSeq()}]];
+
+    location.href = "/board/reBoardNew?p_seq="+p_seq;
+
+  }
+  function fn_boardListForm() {
+    location.href = "/board/boardList";
+  }
+</script>
 </html>

@@ -7,7 +7,7 @@
   <div th:replace="fragments/bodyHeader :: bodyHeader"/>
 
   <form role="form" action="/board/boardNew" th:object="${boardForm}"  method="post">
-
+    <input type="hidden" th:field="*{p_seq}" />
     <div class="form-group">
       <label th:for="writer">작성자</label>
       <input type="text" th:field="*{writer}" class="form-control" placeholder="작성자를 입력하세요"
@@ -26,6 +26,7 @@
     </div>
 
     <button type="submit" class="btn btn-primary">저장</button>
+    <button type="button" class="btn btn-light" th:onclick="fn_boardListForm()">목록</button>
   </form>
   <br/>
   <div th:replace="fragments/footer :: footer" />
@@ -33,4 +34,10 @@
 </div> <!-- /container -->
 
 </body>
+<script th:inline="javascript">
+
+  function fn_boardListForm() {
+    location.href = "/board/boardList";
+  }
+</script>
 </html>

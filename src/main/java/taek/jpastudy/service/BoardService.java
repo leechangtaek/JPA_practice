@@ -1,6 +1,8 @@
 package taek.jpastudy.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import taek.jpastudy.domain.Board;
@@ -17,8 +19,8 @@ public class BoardService {
 
     private final BoardRepository2 boardRepository;
 
-    public List<Board> findBoards(BoardSearch boardSearch){
-        return boardRepository.findBoards(boardSearch);
+    public Page<Board> findBoards(BoardSearch boardSearch , Pageable pageable){
+        return boardRepository.findBoards(boardSearch,pageable);
     }
     public Board findOne(Long seq) {
         return boardRepository.findById(seq);
