@@ -1,5 +1,6 @@
 package taek.jpastudy.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,16 +21,17 @@ public class Board {
     private String title;
     private String content;
     private String writer;
+
     private LocalDateTime write_dt;
 
 
     private Long p_seq;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "parent_id")
-//    private Board parent; // 부모 게시글
-//
-//    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-//    private List<Board> child = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_seq")
+    private Board parent; // 부모 게시글
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    private List<Board> child = new ArrayList<>();
 
 }
