@@ -22,6 +22,10 @@ public class BoardService {
     public Page<Board> findBoards(BoardSearch boardSearch , Pageable pageable){
         return boardRepository.findBoards(boardSearch,pageable);
     }
+
+    public List<Board> apiFindBoards() {
+        return boardRepository.apiFindBoards();
+    }
     public Board findOne(Long seq) {
         return boardRepository.findById(seq);
     }
@@ -44,4 +48,6 @@ public class BoardService {
         Board board = boardRepository.findById(seq);
         boardRepository.deleteBorad(board);
     }
+
+
 }

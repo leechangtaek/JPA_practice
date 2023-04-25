@@ -61,8 +61,34 @@ public class BoardRepository2 {
                                     .limit(pageable.getPageSize())
                                     .orderBy(board.seq.desc())
                                     .fetch();
+
+        for(Board parent : result){
+            List<Board> child = query.selectFrom(board)
+                    .where(board.parent.seq.eq(parent.getSeq()))
+                    .orderBy(board.seq.asc())
+                    .fetch();
+            parent.setChild(child);
+        }
         return new PageImpl<>(result, pageable, totalCnt);
 
+    }
+    public List<Board> apiFindBoards() {
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QBoard board = QBoard.board;
+        List<Board> result =  query
+                .select(board)
+                .from(board)
+                .orderBy(board.seq.desc())
+                .fetch();
+
+        for(Board parent : result){
+            List<Board> child = query.selectFrom(board)
+                    .where(board.parent.seq.eq(parent.getSeq()))
+                    .orderBy(board.seq.asc())
+                    .fetch();
+            parent.setChild(child);
+        }
+        return result;
     }
     private BooleanExpression boardLike(BoardSearch boardSearch){
         if(!StringUtils.hasText(boardSearch.getSearchText())){
@@ -92,4 +118,6 @@ public class BoardRepository2 {
     public void deleteBorad(Board board) {
         em.remove(board);
     }
+
+
 }

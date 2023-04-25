@@ -18,13 +18,19 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Controller
+import static java.util.stream.Collectors.toList;
+
+@RestController
 @RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
 
-
+    @GetMapping("/api/boardList")
+    public List<Board> ordersV2(){
+        List<Board> orders = boardService.apiFindBoards();
+        return orders;
+    }
     @GetMapping("/board/boardList")
     public String board(@ModelAttribute("boardSearch") BoardSearch boardSearch, Model model ,
                         @PageableDefault(page=0, size=10, sort="id", direction=Sort.Direction.DESC) Pageable pageable){
@@ -65,12 +71,16 @@ public class BoardController {
             return "board/boardNew";
         }
         Board board = new Board();
-        board.setP_seq(form.getP_seq());
         board.setTitle(form.getTitle());
         board.setContent(form.getContent());
         board.setWriter(form.getWriter());
         board.setWrite_dt(LocalDateTime.now());
+        if(form.getP_seq() != null){
+            Board parent = boardService.findOne(form.getP_seq());
+            board.setParent(parent);
+        }
         boardService.saveBoard(board);
+
         return "redirect:/board/boardList";
     }
     @GetMapping("board/{seq}/edit")

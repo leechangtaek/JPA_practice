@@ -25,8 +25,6 @@ public class Board {
     private LocalDateTime write_dt;
 
 
-    private Long p_seq;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_seq")
     private Board parent; // 부모 게시글
