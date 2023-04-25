@@ -31,5 +31,4 @@ public class Board {
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private List<Board> child = new ArrayList<>();
-
 }

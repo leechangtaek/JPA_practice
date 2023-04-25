@@ -1,9 +1,9 @@
-package taek.jpastudy.repository;
+package taek.jpastudy.repository.board;
 
-import com.querydsl.core.QueryResults;
-import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,11 +14,9 @@ import org.springframework.util.StringUtils;
 import taek.jpastudy.domain.Board;
 import taek.jpastudy.domain.QBoard;
 import taek.jpastudy.domain.search.BoardSearch;
+import taek.jpastudy.repository.board.dto.BoardDto;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -49,46 +47,63 @@ public class BoardRepository2 {
 //
 //        return query.getResultList();
 //    }
-    public Page<Board> findBoards(BoardSearch boardSearch, Pageable pageable){
+    public Page<BoardDto> findBoards(BoardSearch boardSearch, Pageable pageable){
         JPAQueryFactory query = new JPAQueryFactory(em);
         QBoard board = QBoard.board;
         long totalCnt = query.selectFrom(board).where(boardLike(boardSearch)).fetch().size();
-        List<Board> result =  query
-                                    .select(board)
-                                    .from(board)
-                                    .where(boardLike(boardSearch))
-                                    .offset(pageable.getOffset())
-                                    .limit(pageable.getPageSize())
-                                    .orderBy(board.seq.desc())
-                                    .fetch();
-
-        for(Board parent : result){
-            List<Board> child = query.selectFrom(board)
-                    .where(board.parent.seq.eq(parent.getSeq()))
-                    .orderBy(board.seq.asc())
-                    .fetch();
-            parent.setChild(child);
+//        List<Board> result =  query
+//                                    .select(board)
+//                                    .from(board)
+//                                    .where(boardLike(boardSearch))
+//                                    .offset(pageable.getOffset())
+//                                    .limit(pageable.getPageSize())
+//                                    .orderBy(board.seq.desc())
+//                                    .fetch();
+//        List<Board> result =  query
+//                                    .selectFrom(board).leftJoin(board.child).fetchJoin()
+//                                    .where(board.parent.isNull())
+//                                    .orderBy(board.seq.desc())
+//                                    .fetch();
+//
+//        for (Board board2 : result) {
+//            System.out.println(board2.getTitle());
+//            printChildren(board2.getChild(), 1);
+//        }
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
+        List<BoardDto> result = query
+                .select(Projections.constructor(BoardDto.class,
+                        board.seq,
+                        board.title,
+                        board.content,
+                        board.writer,
+                        board.write_dt,
+                        board.parent.seq,
+                        Expressions.as(JPAExpressions.select(
+                                                Expressions.constant(1L)).from(board)
+                                        .where(board.parent.seq.eq(board.seq))
+                                        .exists(),
+                                "hasChild"
+                        ),
+                        Expressions.constant(0L) // depth는 0으로 시작
+                ))
+                .from(board)
+                .leftJoin(board.parent)
+                .orderBy(board.seq.desc())
+                .fetch();
+        System.out.println("####################################");
+        for (BoardDto board3 : result) {
+            System.out.println(board3.getTitle());
+            System.out.println(board3.getDepth());
         }
+
         return new PageImpl<>(result, pageable, totalCnt);
 
     }
-    public List<Board> apiFindBoards() {
-        JPAQueryFactory query = new JPAQueryFactory(em);
-        QBoard board = QBoard.board;
-        List<Board> result =  query
-                .select(board)
-                .from(board)
-                .orderBy(board.seq.desc())
-                .fetch();
-
-        for(Board parent : result){
-            List<Board> child = query.selectFrom(board)
-                    .where(board.parent.seq.eq(parent.getSeq()))
-                    .orderBy(board.seq.asc())
-                    .fetch();
-            parent.setChild(child);
+    private void printChildren(List<Board> children, int depth) {
+        for (Board child : children) {
+            System.out.println(String.format("%" + (depth * 2) + "s %s", "", child.getTitle()));
+            printChildren(child.getChild(), depth + 1);
         }
-        return result;
     }
     private BooleanExpression boardLike(BoardSearch boardSearch){
         if(!StringUtils.hasText(boardSearch.getSearchText())){
@@ -118,6 +133,5 @@ public class BoardRepository2 {
     public void deleteBorad(Board board) {
         em.remove(board);
     }
-
 
 }

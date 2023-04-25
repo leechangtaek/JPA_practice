@@ -7,10 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import taek.jpastudy.domain.Board;
 import taek.jpastudy.domain.search.BoardSearch;
-import taek.jpastudy.repository.BoardRepository;
-import taek.jpastudy.repository.BoardRepository2;
-
-import java.util.List;
+import taek.jpastudy.repository.board.BoardRepository;
+import taek.jpastudy.repository.board.BoardRepository2;
+import taek.jpastudy.repository.board.dto.BoardDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -19,13 +18,12 @@ public class BoardService {
 
     private final BoardRepository2 boardRepository;
 
-    public Page<Board> findBoards(BoardSearch boardSearch , Pageable pageable){
+    private final BoardRepository boardRepository2;
+
+    public Page<BoardDto> findBoards(BoardSearch boardSearch , Pageable pageable){
         return boardRepository.findBoards(boardSearch,pageable);
     }
 
-    public List<Board> apiFindBoards() {
-        return boardRepository.apiFindBoards();
-    }
     public Board findOne(Long seq) {
         return boardRepository.findById(seq);
     }
