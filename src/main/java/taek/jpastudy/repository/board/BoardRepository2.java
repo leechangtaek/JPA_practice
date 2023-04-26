@@ -1,9 +1,6 @@
 package taek.jpastudy.repository.board;
 
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,10 +11,14 @@ import org.springframework.util.StringUtils;
 import taek.jpastudy.domain.Board;
 import taek.jpastudy.domain.QBoard;
 import taek.jpastudy.domain.search.BoardSearch;
-import taek.jpastudy.repository.board.dto.BoardDto;
+import taek.jpastudy.repository.board.dto.BoardChildrenResponse;
+import taek.jpastudy.repository.board.dto.PostOneBoardResponse;
+import taek.jpastudy.repository.board.dto.QBoardChildrenResponse;
+import taek.jpastudy.repository.board.dto.QPostOneBoardResponse;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,7 +48,7 @@ public class BoardRepository2 {
 //
 //        return query.getResultList();
 //    }
-    public Page<BoardDto> findBoards(BoardSearch boardSearch, Pageable pageable){
+    public Page<PostOneBoardResponse> findBoards(BoardSearch boardSearch, Pageable pageable){
         JPAQueryFactory query = new JPAQueryFactory(em);
         QBoard board = QBoard.board;
         long totalCnt = query.selectFrom(board).where(boardLike(boardSearch)).fetch().size();
@@ -59,44 +60,49 @@ public class BoardRepository2 {
 //                                    .limit(pageable.getPageSize())
 //                                    .orderBy(board.seq.desc())
 //                                    .fetch();
-//        List<Board> result =  query
-//                                    .selectFrom(board).leftJoin(board.child).fetchJoin()
-//                                    .where(board.parent.isNull())
-//                                    .orderBy(board.seq.desc())
-//                                    .fetch();
-//
+
+        List<PostOneBoardResponse> boards =  query
+                                    .select(new QPostOneBoardResponse(
+                                            board.seq,
+                                            board.content,
+                                            board.title,
+                                            board.writer,
+                                            board.write_dt
+                                    )).from(board)
+                                    .where(board.parent.seq.isNull())
+                                    .orderBy(board.seq.asc())
+                                    .fetch();
+        List<BoardChildrenResponse> childBoards =  query
+                .select(new QBoardChildrenResponse(
+                        board.seq,
+                        board.parent.seq,
+                        board.content,
+                        board.title,
+                        board.writer,
+                        board.write_dt
+                )).from(board)
+                .where(board.parent.seq.isNotNull())
+                .fetch();
+
+        boards.stream()
+                .forEach(parent -> {
+                    parent.setChildren(childBoards.stream()
+                            .filter(child -> child.getParent_seq().equals(parent.getSeq()))
+                            .collect(Collectors.toList()));
+                });
+
+
 //        for (Board board2 : result) {
 //            System.out.println(board2.getTitle());
-//            printChildren(board2.getChild(), 1);
+//            //printChildren(board2.getChild(), 1);
+//            int depth = 1;
+//            for (Board child : board2.getChild()) {
+//                System.out.println(String.format("%" + (depth * 2) + "s %s", "", child.getTitle()));
+//                printChildren(child.getChild(), depth + 1);
+//            }
 //        }
-        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@");
-        List<BoardDto> result = query
-                .select(Projections.constructor(BoardDto.class,
-                        board.seq,
-                        board.title,
-                        board.content,
-                        board.writer,
-                        board.write_dt,
-                        board.parent.seq,
-                        Expressions.as(JPAExpressions.select(
-                                                Expressions.constant(1L)).from(board)
-                                        .where(board.parent.seq.eq(board.seq))
-                                        .exists(),
-                                "hasChild"
-                        ),
-                        Expressions.constant(0L) // depth는 0으로 시작
-                ))
-                .from(board)
-                .leftJoin(board.parent)
-                .orderBy(board.seq.desc())
-                .fetch();
-        System.out.println("####################################");
-        for (BoardDto board3 : result) {
-            System.out.println(board3.getTitle());
-            System.out.println(board3.getDepth());
-        }
 
-        return new PageImpl<>(result, pageable, totalCnt);
+        return new PageImpl<>(boards, pageable, totalCnt);
 
     }
     private void printChildren(List<Board> children, int depth) {

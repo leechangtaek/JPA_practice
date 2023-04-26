@@ -30,28 +30,41 @@
             </tr>
             </thead>
             <tbody>
-
-            <tr th:if="${boards != null}" th:each="board : ${boards}">
-                <td th:text="${board.seq}"></td>
-                <td th:text="${board.title}"></td>
-                <td th:text="${board.writer}"></td>
-                <td th:text="${board.write_dt}"></td>
-                <td>
-                    <a href="#" th:href="@{/board/{seq}/edit (seq=${board.seq})}" class="btn btn-primary" role="button">수정</a>
-                </td>
-                <td>
-                    <a href="#" th:href="'javascript:fn_delete('+${board.seq}+')'"
-                       class="btn btn-danger">X</a>
-                </td>
-            </tr>
+            <th:block th:if="${boards != null}" th:each="board : ${boards}">
+                <tr>
+                        <td th:text="${board.seq}"></td>
+                        <td th:text="${board.title}"></td>
+                        <td th:text="${board.writer}"></td>
+                        <td th:text="${board.write_dt}"></td>
+                        <td>
+                            <a href="#" th:href="@{/board/{seq}/edit (seq=${board.seq})}" class="btn btn-primary" role="button">수정</a>
+                        </td>
+                        <td>
+                            <a href="#" th:href="'javascript:fn_delete('+${board.seq}+')'"
+                               class="btn btn-danger">X</a>
+                        </td>
+                </tr>
+                <tr th:each="child : ${board.children}">
+                    <td th:text="${child.seq}"></td>
+                    <td th:text="'(답글)'+${child.title}"</td>
+                    <td th:text="${child.writer}"></td>
+                    <td th:text="${child.write_dt}"></td>
+                    <td>
+                        <a href="#" th:href="@{/board/{seq}/edit (seq=${child.seq})}" class="btn btn-primary" role="button">수정</a>
+                    </td>
+                    <td>
+                        <a href="#" th:href="'javascript:fn_delete('+${child.seq}+')'"
+                           class="btn btn-danger">X</a>
+                    </td>
+                </tr>
+            </th:block>
             <tr th:if="${totalPage==0}">
                 <td colspan="5">
                     <div th:align="center" class="no_data_msg">검색된 결과가 없습니다.</div>
                 </td>
             </tr>
-
-
             </tbody>
+
         </table>
         <nav aria-label="Page navigation example ">
             <ul class="pagination">

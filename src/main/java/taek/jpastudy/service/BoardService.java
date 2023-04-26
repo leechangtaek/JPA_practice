@@ -9,7 +9,12 @@ import taek.jpastudy.domain.Board;
 import taek.jpastudy.domain.search.BoardSearch;
 import taek.jpastudy.repository.board.BoardRepository;
 import taek.jpastudy.repository.board.BoardRepository2;
-import taek.jpastudy.repository.board.dto.BoardDto;
+import taek.jpastudy.repository.board.dto.PostOneBoardResponse;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,8 +25,9 @@ public class BoardService {
 
     private final BoardRepository boardRepository2;
 
-    public Page<BoardDto> findBoards(BoardSearch boardSearch , Pageable pageable){
-        return boardRepository.findBoards(boardSearch,pageable);
+    public Page<PostOneBoardResponse> findBoards(BoardSearch boardSearch , Pageable pageable){
+        Page<PostOneBoardResponse> result = boardRepository.findBoards(boardSearch,pageable);
+        return result;
     }
 
     public Board findOne(Long seq) {

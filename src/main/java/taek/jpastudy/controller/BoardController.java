@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import taek.jpastudy.domain.Board;
 import taek.jpastudy.domain.form.BoardForm;
 import taek.jpastudy.domain.search.BoardSearch;
-import taek.jpastudy.repository.board.dto.BoardDto;
+import taek.jpastudy.repository.board.dto.PostOneBoardResponse;
 import taek.jpastudy.service.BoardService;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -26,7 +26,7 @@ public class BoardController {
     @GetMapping("/board/boardList")
     public String board(@ModelAttribute("boardSearch") BoardSearch boardSearch, Model model ,
                         @PageableDefault(page=0, size=10, sort="id", direction=Sort.Direction.DESC) Pageable pageable){
-        Page<BoardDto> boards = boardService.findBoards(boardSearch,pageable);
+        Page<PostOneBoardResponse> boards = boardService.findBoards(boardSearch,pageable);
 
         //페이지블럭 처리
         //1을 더해주는 이유는 pageable은 0부터라 1을 처리하려면 1을 더해서 시작해주어야 한다.
