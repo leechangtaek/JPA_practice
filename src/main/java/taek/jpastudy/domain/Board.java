@@ -21,6 +21,7 @@ public class Board {
     private String title;
     private String content;
     private String writer;
+    private int depth;
 
     private LocalDateTime write_dt;
 
