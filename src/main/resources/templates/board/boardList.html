@@ -27,6 +27,7 @@
                 <th>작성자</th>
                 <th>등록일</th>
                 <th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -35,7 +36,7 @@
                         <td th:text="${board.seq}"></td>
                         <td th:text="${board.title}"></td>
                         <td th:text="${board.writer}"></td>
-                        <td th:text="${board.write_dt}"></td>
+                        <td th:text="${#temporals.format(board.write_dt,'yyyy-MM-dd HH:mm:ss')}"></td>
                         <td>
                             <a href="#" th:href="@{/board/{seq}/edit (seq=${board.seq})}" class="btn btn-primary" role="button">수정</a>
                         </td>
@@ -46,9 +47,9 @@
                 </tr>
                 <tr th:each="child : ${board.children}">
                     <td th:text="${child.seq}"></td>
-                    <td th:text="'(답글)'+${child.title}"></td>
+                    <td th:text="' ㄴ '+${child.title}"></td>
                     <td th:text="${child.writer}"></td>
-                    <td th:text="${child.write_dt}"></td>
+                    <td th:text="${#temporals.format(board.write_dt,'yyyy-MM-dd HH:mm:ss')}"></td>
                     <td>
                         <a href="#" th:href="@{/board/{seq}/edit (seq=${child.seq})}" class="btn btn-primary" role="button">수정</a>
                     </td>

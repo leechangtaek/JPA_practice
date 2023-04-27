@@ -56,6 +56,7 @@ public class BoardRepository2 {
         JPAQueryFactory query = new JPAQueryFactory(em);
         QBoard board = QBoard.board;
         long totalCnt = query.selectFrom(board).where(boardLike(boardSearch)).fetch().size();
+        /*기존 페이징 처리 로직*/
 //        List<Board> result =  query
 //                                    .select(board)
 //                                    .from(board)
@@ -64,7 +65,7 @@ public class BoardRepository2 {
 //                                    .limit(pageable.getPageSize())
 //                                    .orderBy(board.seq.desc())
 //                                    .fetch();
-
+        /*자식이 하나인 게시글 리스트처*/
         List<PostOneBoardResponse> boards =  query
                                     .select(new QPostOneBoardResponse(
                                             board.seq,
@@ -73,7 +74,9 @@ public class BoardRepository2 {
                                             board.writer,
                                             board.write_dt
                                     )).from(board)
-                .where(board.parent.isNull())
+                                    .where(board.parent.isNull() , boardLike(boardSearch))
+                                    .offset(pageable.getOffset())
+                                    .limit(pageable.getPageSize())
                                     .orderBy(board.seq.asc())
                                     .fetch();
         List<BoardChildrenResponse> childBoards =  query
