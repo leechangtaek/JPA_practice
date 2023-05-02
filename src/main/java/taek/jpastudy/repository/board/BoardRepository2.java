@@ -18,7 +18,10 @@ import taek.jpastudy.domain.search.BoardSearch;
 import taek.jpastudy.repository.board.dto.*;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.querydsl.jpa.JPAExpressions.select;
@@ -52,10 +55,10 @@ public class BoardRepository2 {
 //
 //        return query.getResultList();
 //    }
-    public Page<PostOneBoardResponse> findBoards(BoardSearch boardSearch, Pageable pageable){
-        JPAQueryFactory query = new JPAQueryFactory(em);
-        QBoard board = QBoard.board;
-        long totalCnt = query.selectFrom(board).where(boardLike(boardSearch)).fetch().size();
+//    public Page<PostOneBoardResponse> findBoards(BoardSearch boardSearch, Pageable pageable){
+//        JPAQueryFactory query = new JPAQueryFactory(em);
+//        QBoard board = QBoard.board;
+//        long totalCnt = query.selectFrom(board).where(boardLike(boardSearch)).fetch().size();
         /*기존 페이징 처리 로직*/
 //        List<Board> result =  query
 //                                    .select(board)
@@ -66,90 +69,75 @@ public class BoardRepository2 {
 //                                    .orderBy(board.seq.desc())
 //                                    .fetch();
         /*자식이 하나인 게시글 리스트처*/
-        List<PostOneBoardResponse> boards =  query
-                                    .select(new QPostOneBoardResponse(
-                                            board.seq,
-                                            board.content,
-                                            board.title,
-                                            board.writer,
-                                            board.write_dt
-                                    )).from(board)
-                                    .where(board.parent.isNull() , boardLike(boardSearch))
-                                    .offset(pageable.getOffset())
-                                    .limit(pageable.getPageSize())
-                                    .orderBy(board.seq.asc())
-                                    .fetch();
-        List<BoardChildrenResponse> childBoards =  query
-                .select(new QBoardChildrenResponse(
-                        board.seq,
-                        board.parent.seq,
-                        board.content,
-                        board.title,
-                        board.writer,
-                        board.write_dt
-                )).from(board)
-                .where(board.parent.seq.isNotNull())
-                .fetch();
+//        List<PostOneBoardResponse> boards =  query
+//                                    .select(new QPostOneBoardResponse(
+//                                            board.seq,
+//                                            board.content,
+//                                            board.title,
+//                                            board.writer,
+//                                            board.depth,
+//                                            board.write_dt
+//                                    )).from(board)
+//                                    .where(board.parent.isNull() , boardLike(boardSearch))
+//                                    .offset(pageable.getOffset())
+//                                    .limit(pageable.getPageSize())
+//                                    .orderBy(board.seq.asc())
+//                                    .fetch();
+//        List<BoardChildrenResponse> childBoards =  query
+//                .select(new QBoardChildrenResponse(
+//                        board.seq,
+//                        board.parent.seq,
+//                        board.content,
+//                        board.title,
+//                        board.writer,
+//                        board.depth,
+//                        board.write_dt
+//                )).from(board)
+//                .where(board.parent.seq.isNotNull())
+//                .fetch();
+//
+//        boards.stream()
+//                .forEach(parent -> {
+//                    parent.setChildren(childBoards.stream()
+//                            .filter(child -> child.getParent_seq().equals(parent.getSeq()))
+//                            .collect(Collectors.toList()));
+//                });
 
-        boards.stream()
-                .forEach(parent -> {
-                    parent.setChildren(childBoards.stream()
-                            .filter(child -> child.getParent_seq().equals(parent.getSeq()))
-                            .collect(Collectors.toList()));
-                });
 
 
 //        List<Board> result = query
 //                .selectFrom(board)
-//                .leftJoin(board.child,).fetchJoin()
-//                .where(board.parent.isNull())
-//                .orderBy(board.seq.desc())
+//                .leftJoin(board.parent).fetchJoin()
+//                .orderBy(board.parent.seq.asc().nullsFirst())
 //                .fetch();
+
+//        List<BoardChildrenResponse> childBoards = new ArrayList<>();
 //
+//        Map<Long, BoardChildrenResponse> map = new HashMap<>();
+//
+//        result.stream().forEach(c -> {
+//            BoardChildrenResponse cdto = new BoardChildrenResponse(c.getSeq(),c.getParent().getSeq(),c.getContent(),c.getTitle(), c.getWriter(), c.getDepth(), c.getWrite_dt());
+//                    if(c.getParent() != null){
+//                        cdto.setParent_seq(c.getParent().getSeq());
+//                    }
+//                    map.put(cdto.getSeq(), cdto);
+//                    if (c.getParent() != null) map.get(c.getParent().getSeq()).getChild().add(cdto);
+//                    else childBoards.add(cdto);
+//                }
+//        );
 //
 //        for (Board board2 : result) {
-//            System.out.println(board2.getTitle());
-//            //printChildren(board2.getChild(), 1);
-//            int depth = 1;
-//            for (Board child : board2.getChild()) {
-//                System.out.println(String.format("%" + (depth * 2) + "s %s", "", child.getTitle()));
-//                printChildren(child.getChild(), depth + 1);
-//            }
+//            System.out.println("@@@@"+board2.getTitle());
+//            printChildren(board2.getChild(), 1);
 //        }
 
-//        List<BoardDto> result = query
-//                .select(Projections.constructor(BoardDto.class,
-//                        board.seq,
-//                        board.title,
-//                        board.content,
-//                        board.writer,
-//                        board.write_dt,
-//                        board.parent.seq,
-//                        Expressions.as(select(
-//                                                Expressions.constant(1L)).from(board)
-//                                        .where(board.parent.seq.eq(board.seq))
-//                                        .exists(),
-//                                "hasChild"
-//                        ),
-//                        new CaseBuilder().when(board.parent.isNull())
-//                                .then(0)
-//                                .otherwise(board.parent.depth.add(1))
-//                                .as("depth")
-//                ))
-//                .from(board)
-//                .leftJoin(board.parent)
-//                .orderBy(board.seq.asc())
-//                .fetch();
-//
-//        for(BoardDto b : result){
-//            System.out.println(b.getDepth());
-//        }
 
-        return new PageImpl<>(boards, pageable, totalCnt);
+//        return new PageImpl<>(boards, pageable, totalCnt);
 
-    }
+//    }
     private void printChildren(List<Board> children, int depth) {
         for (Board child : children) {
+            child.setDepth(depth);
             System.out.println(String.format("%" + (depth * 2) + "s %s", "", child.getTitle()));
             printChildren(child.getChild(), depth + 1);
         }

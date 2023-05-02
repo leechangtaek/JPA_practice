@@ -4,8 +4,11 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import taek.jpastudy.domain.Board;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,7 +22,7 @@ public class BoardChildrenResponse {
     private LocalDateTime write_dt;
 
     @QueryProjection
-    public BoardChildrenResponse(Long seq, Long parent_seq, String content, String title, String writer, LocalDateTime write_dt) {
+    public BoardChildrenResponse(Long seq, Long parent_seq, String content, String title, String writer,  LocalDateTime write_dt) {
         this.seq = seq;
         this.parent_seq = parent_seq;
         this.content = content;

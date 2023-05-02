@@ -9,6 +9,7 @@ import taek.jpastudy.domain.Board;
 import taek.jpastudy.domain.search.BoardSearch;
 import taek.jpastudy.repository.board.BoardRepository;
 import taek.jpastudy.repository.board.BoardRepository2;
+import taek.jpastudy.repository.board.BoardRepository3;
 import taek.jpastudy.repository.board.dto.PostOneBoardResponse;
 
 import java.util.ArrayList;
@@ -25,8 +26,11 @@ public class BoardService {
 
     private final BoardRepository boardRepository2;
 
+    private final BoardRepository3 boardRepository3;
+
     public Page<PostOneBoardResponse> findBoards(BoardSearch boardSearch , Pageable pageable){
-        Page<PostOneBoardResponse> result = boardRepository.findBoards(boardSearch,pageable);
+        //Page<PostOneBoardResponse> result = boardRepository2.findBoards(boardSearch,pageable);
+        Page<PostOneBoardResponse> result = null;
         return result;
     }
 

@@ -13,15 +13,20 @@ import taek.jpastudy.domain.Board;
 import taek.jpastudy.domain.form.BoardForm;
 import taek.jpastudy.domain.search.BoardSearch;
 import taek.jpastudy.repository.board.dto.PostOneBoardResponse;
+import taek.jpastudy.service.BoardApiService;
 import taek.jpastudy.service.BoardService;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class BoardController {
 
     private final BoardService boardService;
+
+    private final BoardApiService boardApiService;
 
     @GetMapping("/board/boardList")
     public String board(@ModelAttribute("boardSearch") BoardSearch boardSearch, Model model ,
@@ -42,6 +47,12 @@ public class BoardController {
         model.addAttribute("totalPage",boards.getTotalPages());
         return "board/boardList";
     }
+
+    @GetMapping("/board/api/boardList")
+    public List<PostOneBoardResponse> board(){
+        return boardApiService.findBoards();
+    }
+
     @GetMapping ("/board/boardNew")
     public String boardNewForm(Model model){
         //System.out.println("p_seq = " + p_seq);
@@ -69,6 +80,7 @@ public class BoardController {
         if(form.getP_seq() != null){
             Board parent = boardService.findOne(form.getP_seq());
             board.setParent(parent);
+            board.setDepth(1);
 
         }
         boardService.saveBoard(board);

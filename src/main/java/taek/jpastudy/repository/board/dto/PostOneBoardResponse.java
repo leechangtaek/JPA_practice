@@ -14,6 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class PostOneBoardResponse {
+    private Long parent_seq;
     private Long seq;
     private String content;
     private String title;
@@ -25,7 +26,8 @@ public class PostOneBoardResponse {
     private List<BoardChildrenResponse> children = new ArrayList<>();
 
     @QueryProjection
-    public PostOneBoardResponse(Long seq, String content, String title, String writer, LocalDateTime write_dt) {
+    public PostOneBoardResponse(Long parent_seq, Long seq, String content, String title, String writer, LocalDateTime write_dt) {
+        this.parent_seq = parent_seq;
         this.seq = seq;
         this.content = content;
         this.title = title;
