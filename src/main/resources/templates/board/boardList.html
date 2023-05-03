@@ -45,19 +45,6 @@
                                class="btn btn-danger">X</a>
                         </td>
                 </tr>
-                <tr th:each="child : ${board.children}">
-                    <td th:text="${child.id}"></td>
-                    <td th:text="' ㄴ '+${child.title}"></td>
-                    <td th:text="${child.writer}"></td>
-                    <td th:text="${#temporals.format(board.write_dt,'yyyy-MM-dd HH:mm:ss')}"></td>
-                    <td>
-                        <a href="#" th:href="@{/board/{id}/edit (id=${child.id})}" class="btn btn-primary" role="button">수정</a>
-                    </td>
-                    <td>
-                        <a href="#" th:href="'javascript:fn_delete('+${child.id}+')'"
-                           class="btn btn-danger">X</a>
-                    </td>
-                </tr>
             </th:block>
             <tr th:if="${totalPage==0}">
                 <td colspan="5">
