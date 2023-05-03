@@ -27,77 +27,67 @@ import java.util.stream.Collectors;
 public class BoardRepository3 {
     private final EntityManager em;
 
-    public List<PostOneBoardResponse> findBoards(){
-        JPAQueryFactory query = new JPAQueryFactory(em);
-        QBoard board = QBoard.board;
-
-        List<PostOneBoardResponse> boards = query
-                .select(new QPostOneBoardResponse(
-                        board.parent.seq,
-                        board.seq,
-                        board.content,
-                        board.title,
-                        board.writer,
-                        board.write_dt
-                        ))
-                .from(board)
-                .where(board.parent.seq.isNull())
-                .orderBy(board.seq.asc())
-                .fetch();
-
-        List<BoardChildrenResponse> childBoards = query
-                .select(new QBoardChildrenResponse(
-                        board.seq,
-                        board.parent.seq,
-                        board.content,
-                        board.title,
-                        board.writer,
-                        board.write_dt))
-                .from(board)
-                .where(board.parent.seq.isNotNull())
-                .fetch();
-
-        for(PostOneBoardResponse b : boards){
-            System.out.println("b.getSeq() = " + b.getSeq());
-        }
-        for(BoardChildrenResponse c : childBoards){
-            System.out.println("c.getParent_seq() = " + c.getParent_seq());
-        }
-        boards.stream()
-                .forEach(parent -> {
-                    parent.setChildren(childBoards.stream()
-                            .filter(child -> child.getParent_seq().equals(parent.getSeq()))
-                            .collect(Collectors.toList()));
-                });
-
-        for(PostOneBoardResponse b : boards){
-        System.out.println("b.getSeq() = " + b.getSeq());
-
-            for(BoardChildrenResponse c : b.getChildren()){
-                System.out.println("c.getParent_seq() = " + c.getParent_seq());
-            }
-        }
-        return boards;
-
-    }
-
-
+//    public List<PostOneBoardResponse> findBoards(){
+//        JPAQueryFactory query = new JPAQueryFactory(em);
+//        QBoard board = QBoard.board;
+//
+//        List<PostOneBoardResponse> boards = query
+//                .select(new QPostOneBoardResponse(
+//                        board.parent.seq,
+//                        board.seq,
+//                        board.content,
+//                        board.title,
+//                        board.writer,
+//                        board.write_dt
+//                        ))
+//                .from(board)
+//                .where(board.parent.seq.isNull())
+//                .orderBy(board.seq.asc())
+//                .fetch();
+//
+//        List<BoardChildrenResponse> childBoards = query
+//                .select(new QBoardChildrenResponse(
+//                        board.seq,
+//                        board.parent.seq,
+//                        board.content,
+//                        board.title,
+//                        board.writer,
+//                        board.write_dt))
+//                .from(board)
+//                .where(board.parent.seq.isNotNull())
+//                .fetch();
+//
+//        for(PostOneBoardResponse b : boards){
+//            System.out.println("b.getSeq() = " + b.getSeq());
+//        }
+//        for(BoardChildrenResponse c : childBoards){
+//            System.out.println("c.getParent_seq() = " + c.getParent_seq());
+//        }
+//        boards.stream()
+//                .forEach(parent -> {
+//                    parent.setChildren(childBoards.stream()
+//                            .filter(child -> child.getParent_seq().equals(parent.getSeq()))
+//                            .collect(Collectors.toList()));
+//                });
+//
+//        for(PostOneBoardResponse b : boards){
+//        System.out.println("b.getSeq() = " + b.getSeq());
+//
+//            for(BoardChildrenResponse c : b.getChildren()){
+//                System.out.println("c.getParent_seq() = " + c.getParent_seq());
+//            }
+//        }
+//        return boards;
+//
+//    }
 
 
-
-
-
-
-
-
-
-    private void printChildren(List<Board> children, int depth) {
-        for (Board child : children) {
-            child.setDepth(depth);
-            System.out.println(String.format("%" + (depth * 2) + "s %s", "", child.getTitle()));
-            printChildren(child.getChild(), depth + 1);
-        }
-    }
+//    private void printChildren(List<Board> children, int depth) {
+//        for (Board child : children) {
+//            System.out.println(String.format("%" + (depth * 2) + "s %s", "", child.getTitle()));
+//            printChildren(child.getChild(), depth + 1);
+//        }
+//    }
     private BooleanExpression boardLike(BoardSearch boardSearch){
         if(!StringUtils.hasText(boardSearch.getSearchText())){
             return null;
@@ -112,7 +102,7 @@ public class BoardRepository3 {
     }
 
     public void save(Board board) {
-        if (board.getSeq() == null) {
+        if (board.getId() == null) {
             em.persist(board);
         } else {
             em.merge(board);

@@ -23,10 +23,10 @@ public class BoardApiService {
 
     private final BoardRepository3 boardRepository3;
 
-    public List<PostOneBoardResponse> findBoards(){
-
-        return boardRepository3.findBoards();
-    }
+//    public List<PostOneBoardResponse> findBoards(){
+//
+//        return boardRepository3.findBoards();
+//    }
 
 
 

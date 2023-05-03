@@ -1,5 +1,6 @@
 package taek.jpastudy.repository.board;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -30,6 +31,8 @@ import static com.querydsl.jpa.JPAExpressions.select;
 @RequiredArgsConstructor
 public class BoardRepository2 {
     private final EntityManager em;
+    JPAQueryFactory query = new JPAQueryFactory(em);
+    QBoard board = QBoard.board;
 
     /*criteria로 조회로직*/
 //    public List<Board> findBoards(BoardSearch boardSearch, Pageable pageable) {
@@ -55,9 +58,9 @@ public class BoardRepository2 {
 //
 //        return query.getResultList();
 //    }
-//    public Page<PostOneBoardResponse> findBoards(BoardSearch boardSearch, Pageable pageable){
-//        JPAQueryFactory query = new JPAQueryFactory(em);
-//        QBoard board = QBoard.board;
+    public Page<Board> findBoards(BoardSearch boardSearch, Pageable pageable){
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QBoard board = QBoard.board;
 //        long totalCnt = query.selectFrom(board).where(boardLike(boardSearch)).fetch().size();
         /*기존 페이징 처리 로직*/
 //        List<Board> result =  query
@@ -66,80 +69,33 @@ public class BoardRepository2 {
 //                                    .where(boardLike(boardSearch))
 //                                    .offset(pageable.getOffset())
 //                                    .limit(pageable.getPageSize())
-//                                    .orderBy(board.seq.desc())
+//                                    .orderBy(board.id.desc())
 //                                    .fetch();
-        /*자식이 하나인 게시글 리스트처*/
-//        List<PostOneBoardResponse> boards =  query
-//                                    .select(new QPostOneBoardResponse(
-//                                            board.seq,
-//                                            board.content,
-//                                            board.title,
-//                                            board.writer,
-//                                            board.depth,
-//                                            board.write_dt
-//                                    )).from(board)
-//                                    .where(board.parent.isNull() , boardLike(boardSearch))
-//                                    .offset(pageable.getOffset())
-//                                    .limit(pageable.getPageSize())
-//                                    .orderBy(board.seq.asc())
-//                                    .fetch();
-//        List<BoardChildrenResponse> childBoards =  query
-//                .select(new QBoardChildrenResponse(
-//                        board.seq,
-//                        board.parent.seq,
-//                        board.content,
-//                        board.title,
-//                        board.writer,
-//                        board.depth,
-//                        board.write_dt
-//                )).from(board)
-//                .where(board.parent.seq.isNotNull())
-//                .fetch();
-//
-//        boards.stream()
-//                .forEach(parent -> {
-//                    parent.setChildren(childBoards.stream()
-//                            .filter(child -> child.getParent_seq().equals(parent.getSeq()))
-//                            .collect(Collectors.toList()));
-//                });
+
+        List<Board> boardList = query
+                .selectFrom(board)
+                .where(boardLike(boardSearch))
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(board.g_num.desc(),board.g_order.asc())
+                .fetch();
+        long totalCnt = boardList.size();
 
 
 
-//        List<Board> result = query
-//                .selectFrom(board)
-//                .leftJoin(board.parent).fetchJoin()
-//                .orderBy(board.parent.seq.asc().nullsFirst())
-//                .fetch();
-
-//        List<BoardChildrenResponse> childBoards = new ArrayList<>();
-//
-//        Map<Long, BoardChildrenResponse> map = new HashMap<>();
-//
-//        result.stream().forEach(c -> {
-//            BoardChildrenResponse cdto = new BoardChildrenResponse(c.getSeq(),c.getParent().getSeq(),c.getContent(),c.getTitle(), c.getWriter(), c.getDepth(), c.getWrite_dt());
-//                    if(c.getParent() != null){
-//                        cdto.setParent_seq(c.getParent().getSeq());
-//                    }
-//                    map.put(cdto.getSeq(), cdto);
-//                    if (c.getParent() != null) map.get(c.getParent().getSeq()).getChild().add(cdto);
-//                    else childBoards.add(cdto);
-//                }
-//        );
-//
-//        for (Board board2 : result) {
-//            System.out.println("@@@@"+board2.getTitle());
-//            printChildren(board2.getChild(), 1);
-//        }
 
 
-//        return new PageImpl<>(boards, pageable, totalCnt);
+        return new PageImpl<>(boardList, pageable, totalCnt);
 
-//    }
+    }
+
+
+
+
+
     private void printChildren(List<Board> children, int depth) {
         for (Board child : children) {
-            child.setDepth(depth);
             System.out.println(String.format("%" + (depth * 2) + "s %s", "", child.getTitle()));
-            printChildren(child.getChild(), depth + 1);
         }
     }
     private BooleanExpression boardLike(BoardSearch boardSearch){
@@ -156,19 +112,39 @@ public class BoardRepository2 {
     }
 
     public void save(Board board) {
-        if (board.getSeq() == null) {
-            em.persist(board);
-        } else {
-            em.merge(board);
-        }
+        em.persist(board);
     }
 
-    public Board findById(Long seq){
-        return em.find(Board.class,seq);
+    public Board findById(Long id){
+        return em.find(Board.class,id);
     }
 
     public void deleteBorad(Board board) {
         em.remove(board);
     }
 
+    public Long findByGroupNum(Long id) {
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QBoard board = QBoard.board;
+        return query.select(board.g_num.max().coalesce(0L)).from(board).where(board.id.eq(id)).fetchOne();
+    }
+
+
+    public void updateChildCnt(Board parentBoard) {
+        em.merge(parentBoard);
+
+    }
+
+    public Long findBySumChildCnt(Long g_num) {
+        return query.select(board.c_cnt.sum()).from(board).where(board.g_num.eq(g_num)).fetchOne();
+    }
+
+    public Long findByNvlMaxStep(Long g_num) {
+        return query.select(board.g_num.max()).from(board).where(board.g_num.eq(g_num)).fetchOne();
+    }
+
+    public void updateGroupOrderPlus(Long g_num, Long num) {
+        query.update(board).set(board.g_num,g_num+1).where(board.g_num.eq(g_num).and(board.g_order.gt(num)));
+
+    }
 }

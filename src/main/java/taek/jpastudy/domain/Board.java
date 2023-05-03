@@ -16,20 +16,19 @@ import java.util.List;
 public class Board {
 
     @Id @GeneratedValue
-    private Long seq;
+    private Long id;
 
     private String title;
     private String content;
     private String writer;
-    private int depth;
+    private Long g_num; //borad를 그룹으로 묶기
+    private Long g_order;  //board그룹들의 순서
+    private Long step;  //board의 계층
+    private Long p_id; //부모board의 id
+    private Long c_cnt; // 자식board의 수
 
     private LocalDateTime write_dt;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_seq")
-    private Board parent; // 부모 게시글
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<Board> child = new ArrayList<>();
 }

@@ -33,28 +33,28 @@
             <tbody>
             <th:block th:if="${boards != null}" th:each="board : ${boards}">
                 <tr>
-                        <td th:text="${board.seq}"></td>
+                        <td th:text="${board.id}"></td>
                         <td th:text="${board.title}"></td>
                         <td th:text="${board.writer}"></td>
                         <td th:text="${#temporals.format(board.write_dt,'yyyy-MM-dd HH:mm:ss')}"></td>
                         <td>
-                            <a href="#" th:href="@{/board/{seq}/edit (seq=${board.seq})}" class="btn btn-primary" role="button">수정</a>
+                            <a href="#" th:href="@{/board/{id}/edit (id=${board.id})}" class="btn btn-primary" role="button">수정</a>
                         </td>
                         <td>
-                            <a href="#" th:href="'javascript:fn_delete('+${board.seq}+')'"
+                            <a href="#" th:href="'javascript:fn_delete('+${board.id}+')'"
                                class="btn btn-danger">X</a>
                         </td>
                 </tr>
                 <tr th:each="child : ${board.children}">
-                    <td th:text="${child.seq}"></td>
+                    <td th:text="${child.id}"></td>
                     <td th:text="' ㄴ '+${child.title}"></td>
                     <td th:text="${child.writer}"></td>
                     <td th:text="${#temporals.format(board.write_dt,'yyyy-MM-dd HH:mm:ss')}"></td>
                     <td>
-                        <a href="#" th:href="@{/board/{seq}/edit (seq=${child.seq})}" class="btn btn-primary" role="button">수정</a>
+                        <a href="#" th:href="@{/board/{id}/edit (id=${child.id})}" class="btn btn-primary" role="button">수정</a>
                     </td>
                     <td>
-                        <a href="#" th:href="'javascript:fn_delete('+${child.seq}+')'"
+                        <a href="#" th:href="'javascript:fn_delete('+${child.id}+')'"
                            class="btn btn-danger">X</a>
                     </td>
                 </tr>
@@ -69,7 +69,7 @@
         </table>
         <nav aria-label="Page navigation example ">
             <ul class="pagination">
-                <th:block th:each="page:${#numbers.sequence(startPage,endPage)}">
+                <th:block th:each="page:${#numbers.iduence(startPage,endPage)}">
                  <li class="page-item">
                         <a class="page-link" th:if="${page != nowPage}"  th:onclick="|javascript:fn_movePage('${page}')|" th:text ="${page}"></a>
                         <a class="page-link" th:if="${page==nowPage}" th:text ="${page}" style="color:red"></a>
@@ -110,11 +110,11 @@ function fn_boardNew() {
     location.href = "/board/boardNew";
 }
 
-function fn_delete(seq) {
+function fn_delete(id) {
     if(confirm("정말 삭제하시겠습니까?")){
         var form = document.createElement("form");
         form.setAttribute("method", "post");
-        form.setAttribute("action", "/board/" + seq +"/delete");
+        form.setAttribute("action", "/board/" + id +"/delete");
         document.body.appendChild(form);
         form.submit();
     }

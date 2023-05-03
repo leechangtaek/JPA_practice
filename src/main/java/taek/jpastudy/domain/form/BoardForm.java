@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
 @Getter @Setter
 public class BoardForm {
 
-    private Long seq;
+    private Long id;
 
     @NotEmpty(message = "제목 항목은 필수입니다.")
     private String title;
@@ -17,6 +17,6 @@ public class BoardForm {
     private String writer;
 
     private String content;
-    private Long p_seq;
+    private Long p_id;
 }
 
