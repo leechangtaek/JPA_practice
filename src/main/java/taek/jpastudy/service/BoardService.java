@@ -41,8 +41,6 @@ public class BoardService {
     @Transactional
     public Long saveBoard(BoardForm form) {
 
-        Long g_num = boardRepository.findByGroupNum(form.getId());
-
         Board board = new Board();
         board.setTitle(form.getTitle());
         board.setContent(form.getContent());
@@ -50,7 +48,8 @@ public class BoardService {
         board.setWrite_dt(LocalDateTime.now());
 
         if(form.getP_id() == null){ //신규
-            board.setG_num(g_num+0l);
+            Long g_num = boardRepository.findByGroupNum();
+            board.setG_num(g_num+1l);
             board.setG_order(0l);
             board.setStep(0l);
             board.setP_id(0l);

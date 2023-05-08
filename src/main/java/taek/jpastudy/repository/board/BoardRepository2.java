@@ -31,8 +31,7 @@ import static com.querydsl.jpa.JPAExpressions.select;
 @RequiredArgsConstructor
 public class BoardRepository2 {
     private final EntityManager em;
-    JPAQueryFactory query = new JPAQueryFactory(em);
-    QBoard board = QBoard.board;
+
 
     /*criteria로 조회로직*/
 //    public List<Board> findBoards(BoardSearch boardSearch, Pageable pageable) {
@@ -61,7 +60,7 @@ public class BoardRepository2 {
     public Page<Board> findBoards(BoardSearch boardSearch, Pageable pageable){
         JPAQueryFactory query = new JPAQueryFactory(em);
         QBoard board = QBoard.board;
-//        long totalCnt = query.selectFrom(board).where(boardLike(boardSearch)).fetch().size();
+        long totalCnt = query.selectFrom(board).where(boardLike(boardSearch)).fetch().size();
         /*기존 페이징 처리 로직*/
 //        List<Board> result =  query
 //                                    .select(board)
@@ -79,7 +78,7 @@ public class BoardRepository2 {
                 .limit(pageable.getPageSize())
                 .orderBy(board.g_num.desc(),board.g_order.asc())
                 .fetch();
-        long totalCnt = boardList.size();
+//        long totalCnt = boardList.size();
 
 
 
@@ -123,10 +122,10 @@ public class BoardRepository2 {
         em.remove(board);
     }
 
-    public Long findByGroupNum(Long id) {
+    public Long findByGroupNum() {
         JPAQueryFactory query = new JPAQueryFactory(em);
         QBoard board = QBoard.board;
-        return query.select(board.g_num.max().coalesce(0L)).from(board).where(board.id.eq(id)).fetchOne();
+        return query.select(board.g_num.max().coalesce(0L)).from(board).fetchOne();
     }
 
 
@@ -136,14 +135,20 @@ public class BoardRepository2 {
     }
 
     public Long findBySumChildCnt(Long g_num) {
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QBoard board = QBoard.board;
         return query.select(board.c_cnt.sum()).from(board).where(board.g_num.eq(g_num)).fetchOne();
     }
 
     public Long findByNvlMaxStep(Long g_num) {
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QBoard board = QBoard.board;
         return query.select(board.g_num.max()).from(board).where(board.g_num.eq(g_num)).fetchOne();
     }
 
     public void updateGroupOrderPlus(Long g_num, Long num) {
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QBoard board = QBoard.board;
         query.update(board).set(board.g_num,g_num+1).where(board.g_num.eq(g_num).and(board.g_order.gt(num)));
 
     }

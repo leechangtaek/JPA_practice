@@ -34,6 +34,11 @@
             <th:block th:if="${boards != null}" th:each="board : ${boards}">
                 <tr>
                         <td th:text="${board.id}"></td>
+                        <td th:text="${board.g_order}"></td>
+                        <td>
+                            <span th:each="i : ${#numbers.sequence(0, board.g_order)}">&#160;&#160;</span>
+                            <span th:text="${board.title}"></span>
+                        </td>
                         <td th:text="${board.title}"></td>
                         <td th:text="${board.writer}"></td>
                         <td th:text="${#temporals.format(board.write_dt,'yyyy-MM-dd HH:mm:ss')}"></td>
@@ -56,7 +61,7 @@
         </table>
         <nav aria-label="Page navigation example ">
             <ul class="pagination">
-                <th:block th:each="page:${#numbers.iduence(startPage,endPage)}">
+                <th:block th:each="page:${#numbers.sequence(startPage,endPage)}">
                  <li class="page-item">
                         <a class="page-link" th:if="${page != nowPage}"  th:onclick="|javascript:fn_movePage('${page}')|" th:text ="${page}"></a>
                         <a class="page-link" th:if="${page==nowPage}" th:text ="${page}" style="color:red"></a>
