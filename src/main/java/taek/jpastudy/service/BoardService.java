@@ -78,18 +78,18 @@ public class BoardService {
 
     private Long groupOrderAndUpdate(Board parentBoard) {
         Long saveStep = parentBoard.getStep() +1l;
-        Long g_order = parentBoard.getG_order();
-        Long c_cnt = parentBoard.getC_cnt();
-        Long g_num = parentBoard.getG_num();
+        Long g_order = parentBoard.getG_order(); //board그룹들의 순서
+        Long c_cnt = parentBoard.getC_cnt(); //자식들 개수
+        Long g_num = parentBoard.getG_num();  //board그룹들 넘버
 
-        Long cCntSum = boardRepository.findBySumChildCnt(g_num);
+        Long cCntSum = boardRepository.findBySumChildCnt(g_num); //board그룹넘버가 같은 애들 합
 
-        Long maxStep = boardRepository.findByNvlMaxStep(g_num);
+        Long maxStep = boardRepository.findByNvlMaxStep(g_num);  //board그룹너버의 최상
 
         if(saveStep < maxStep){
-            return c_cnt+1l;
+            return cCntSum+1l;
         }else if(saveStep == maxStep){
-            boardRepository.updateGroupOrderPlus(g_num,g_order+cCntSum);
+            boardRepository.updateGroupOrderPlus(g_num,g_order+c_cnt);
             return g_order+c_cnt+1l;
         }else if(saveStep > maxStep){
             boardRepository.updateGroupOrderPlus(g_num,g_order);

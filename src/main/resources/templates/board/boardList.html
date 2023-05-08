@@ -34,9 +34,8 @@
             <th:block th:if="${boards != null}" th:each="board : ${boards}">
                 <tr>
                         <td th:text="${board.id}"></td>
-                        <td th:text="${board.g_order}"></td>
                         <td>
-                            <span th:each="i : ${#numbers.sequence(0, board.g_order)}">&#160;&#160;</span>
+                            <span th:each="i : ${#numbers.sequence(0, board.step)}">&#160;&#160;</span>
                             <span th:text="${board.title}"></span>
                         </td>
                         <td th:text="${board.title}"></td>
