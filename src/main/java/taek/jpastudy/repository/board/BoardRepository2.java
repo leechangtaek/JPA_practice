@@ -78,19 +78,10 @@ public class BoardRepository2 {
                 .limit(pageable.getPageSize())
                 .orderBy(board.g_num.desc(),board.g_order.asc())
                 .fetch();
-//        long totalCnt = boardList.size();
-
-
-
-
 
         return new PageImpl<>(boardList, pageable, totalCnt);
 
     }
-
-
-
-
 
     private void printChildren(List<Board> children, int depth) {
         for (Board child : children) {
@@ -101,10 +92,8 @@ public class BoardRepository2 {
         if(!StringUtils.hasText(boardSearch.getSearchText())){
             return null;
         }
-        String searchStatus = boardSearch.getSearchStatus();
-
-        if(searchStatus.equals("title")){
-            return QBoard.board.title.like("%"+boardSearch.getSearchText()+"%");
+        if(boardSearch.getSearchStatus().equals("title")){
+            return QBoard.board.title.like("%"+boardSearch.getSearchText()+"%").and(QBoard.board.step.eq(0l));
         }else{
             return QBoard.board.writer.like("%"+boardSearch.getSearchText()+"%");
         }

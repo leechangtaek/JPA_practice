@@ -25,10 +25,6 @@ public class BoardService {
 
     private final BoardRepository2 boardRepository;
 
-    private final BoardRepository boardRepository2;
-
-//    private final BoardRepository3 boardRepository3;
-
     public Page<Board> findBoards(BoardSearch boardSearch , Pageable pageable){
         Page<Board> result = boardRepository.findBoards(boardSearch,pageable);
 //        Page<Board> result = null;
