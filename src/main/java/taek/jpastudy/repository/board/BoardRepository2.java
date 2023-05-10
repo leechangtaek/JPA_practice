@@ -107,6 +107,12 @@ public class BoardRepository2 {
         return em.find(Board.class,id);
     }
 
+    public List<Board> findByChildId(Long id) {
+        return em.createQuery("select b from Board b where b.p_id = :id", Board.class)
+                .setParameter("id", id)
+                .getResultList();
+    }
+
     public void deleteBorad(Board board) {
         em.remove(board);
     }
@@ -141,4 +147,6 @@ public class BoardRepository2 {
         query.update(board).set(board.g_order,num+1).where(board.g_num.eq(g_num).and(board.g_order.gt(num)));
 
     }
+
+
 }

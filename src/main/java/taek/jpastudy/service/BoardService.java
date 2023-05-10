@@ -66,9 +66,6 @@ public class BoardService {
             boardRepository.updateChildCnt(parentBoard);
         }
 
-
-
-        //boardRepository.save(board);
         return form.getP_id();
     }
 
@@ -104,9 +101,18 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteBoard(Long seq) {
-        Board board = boardRepository.findById(seq);
+    public void deleteBoard(Long id) {
+        Board board = boardRepository.findById(id);
+        List<Board> childBoard = boardRepository.findByChildId(id);
         boardRepository.deleteBorad(board);
+        if(childBoard.size()!=0){
+            for(Board b : childBoard){
+                deleteBoard(b.getId());
+            }
+        }
+
+
+
     }
 
 
