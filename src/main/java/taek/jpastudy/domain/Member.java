@@ -19,7 +19,6 @@ public class Member {
 
     @NotEmpty
     private String name;
-
     private String email;
     private String password;
 
