@@ -28,9 +28,9 @@ public class Board {
     private Long step;  //board의 계층
     private Long p_id; //부모board의 id
     private Long c_cnt; // 자식board의 수
+    private Long like_cnt; // 좋아요 수
 
     private LocalDateTime write_dt;
-
 
 
 }

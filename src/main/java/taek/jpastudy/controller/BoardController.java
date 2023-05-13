@@ -90,6 +90,12 @@ public class BoardController {
         boardService.updateBoard(id, form.getContent(),form.getTitle(),form.getWriter());
         return "redirect:/board/boardList";
     }
+    @PostMapping("board/{id}/addLikeCnt")
+    public String updateBoardLikeCnt(@PathVariable("id") Long id, @ModelAttribute("form") BoardForm form) {
+        System.out.println("id = " + id);
+        boardService.updateBoardLikeCnt(id);
+        return "redirect:/board/boardList";
+    }
     @PostMapping("board/{id}/delete")
     public String deleteBoard(@PathVariable("id") Long id) {
         boardService.deleteBoard(id);

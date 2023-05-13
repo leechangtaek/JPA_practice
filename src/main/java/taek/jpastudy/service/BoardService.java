@@ -42,6 +42,7 @@ public class BoardService {
         board.setContent(form.getContent());
         board.setWriter(form.getWriter());
         board.setWrite_dt(LocalDateTime.now());
+        board.setLike_cnt(0l);
 
         if(form.getP_id() == null){ //신규
             Long g_num = boardRepository.findByGroupNum();
@@ -114,6 +115,10 @@ public class BoardService {
 
 
     }
-
-
+    @Transactional
+    public void updateBoardLikeCnt(Long id) {
+        Board board = boardRepository.findById(id);
+        System.out.println("board.getLie = " + board.getLike_cnt());
+        board.setLike_cnt(board.getLike_cnt()+1);
+    }
 }

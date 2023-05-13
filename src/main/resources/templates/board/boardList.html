@@ -26,6 +26,8 @@
                 <th>제목</th>
                 <th>작성자</th>
                 <th>등록일</th>
+                <th>좋아요 수</th>
+                <th></th>
                 <th></th>
                 <th></th>
             </tr>
@@ -38,9 +40,12 @@
                             <span th:each="i : ${#numbers.sequence(0, board.step)}">&#160;&#160;</span>
                             <span th:text="${board.title}"></span>
                         </td>
-                        <td th:text="${board.title}"></td>
                         <td th:text="${board.writer}"></td>
                         <td th:text="${#temporals.format(board.write_dt,'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td th:text="${board.like_cnt}"></td>
+                        <td>
+                            <a href="#" th:href="'javascript:fn_addLikeCnt('+${board.id}+')'"class="btn btn-warning">♥</a>
+                        </td>
                         <td>
                             <a href="#" th:href="@{/board/{id}/edit (id=${board.id})}" class="btn btn-primary" role="button">수정</a>
                         </td>
@@ -51,7 +56,7 @@
                 </tr>
             </th:block>
             <tr th:if="${totalPage==0}">
-                <td colspan="5">
+                <td colspan="8">
                     <div th:align="center" class="no_data_msg">검색된 결과가 없습니다.</div>
                 </td>
             </tr>
@@ -109,7 +114,13 @@ function fn_delete(id) {
         document.body.appendChild(form);
         form.submit();
     }
-
+}
+function fn_addLikeCnt(id) {
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", "/board/" + id +"/addLikeCnt");
+    document.body.appendChild(form);
+    form.submit();
 }
 
 </script>
