@@ -92,7 +92,6 @@ public class BoardController {
     }
     @PostMapping("board/{id}/addLikeCnt")
     public String updateBoardLikeCnt(@PathVariable("id") Long id, @ModelAttribute("form") BoardForm form) {
-        System.out.println("id = " + id);
         boardService.updateBoardLikeCnt(id);
         return "redirect:/board/boardList";
     }

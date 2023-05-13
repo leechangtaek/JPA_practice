@@ -118,7 +118,7 @@ public class BoardService {
     @Transactional
     public void updateBoardLikeCnt(Long id) {
         Board board = boardRepository.findById(id);
-        System.out.println("board.getLie = " + board.getLike_cnt());
         board.setLike_cnt(board.getLike_cnt()+1);
+
     }
 }
