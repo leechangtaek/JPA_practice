@@ -37,7 +37,7 @@ public class BoardServiceTest {
     @Test
     public void 동시에_100명이_좋아요를_누름()throws Exception{
 
-        Long board_id = 12l;
+        Long board_id = 1l;
 
         ExecutorService executorService = Executors.newFixedThreadPool(100);
         CountDownLatch countDownLatch = new CountDownLatch(100);
